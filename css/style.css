@@ -1,7 +1,14 @@
-.textArea {
-    /* position: fixed; */
-    top: 100px;
+body {
+    color:#022f58;
+    text-align: center;
 }
+h1 {
+    margin: 10px 0 0;
+}
+h3 {
+    margin: 10px 0 0;
+}
+
 #textArea{
     position: fixed;
     border: 2px solid #043b6e;
@@ -9,7 +16,13 @@
     width: 70%;
     height: 150px;
     left: 15%;
-    top: 15%;
+    top: 20%;
+    font-size: 18px;
+    color:#022f58;
+}
+
+#textarea:focus {
+    border: 2px solid #043b6e;
 }
 
 .keyboard_wrapper {
