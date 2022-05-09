@@ -71,7 +71,7 @@ const elements = {
         textWrapper: null,
         main: null,
         keysContainer: null,
-        functionalKeys: ['tab',
+        functionalKeys: ['Tab',
             'CapsLock',
             'ShiftLeft',
             'ControlLeft',
@@ -179,26 +179,37 @@ function switchSymbols (langInd) {
     })
 }
 
-function toggleCapsLock() {
-        properties.capsLock = !properties.capsLock
-        for (const el of keyLayout) {
-            const key = document.querySelector(`.${el}`)
-            if (!elements.functionalKeys.includes(el)) {
-                key.textContent = properties.capsLock ? key.textContent.toUpperCase() : key.textContent.toLowerCase()
-            }
+const toggleCapsLock = () => {
+    const capsLock = document.querySelector('.CapsLock')
+    const shifts = document.querySelector('.ShiftLeft').classList.contains('key__active')
+      || document.querySelector('.ShiftRight').classList.contains('key__active')
+  
+    keyLayout.forEach((el) => {
+      if (!elements.functionalKeys.includes(el)) {
+        const key = document.querySelector(`.${el}`)
+        if (capsLock.classList.contains('key__active')) {
+            properties.capsLock = true
+          key.innerHTML = key.innerHTML.toUpperCase()
+        } else if (!shifts) {
+            properties.capsLock = false
+          key.innerHTML = key.innerHTML.toLowerCase()
         }
-}
+      }
+    })
+    shiftHandler()
+  }
 
 const shiftHandler = () => {
 const condition = document.querySelector('.ShiftLeft').classList.contains('key__active')
-    || document.querySelector('.ShiftRight').classList.contains('key__active')
-
+|| document.querySelector('.ShiftRight').classList.contains('key__active')
+const capsLock = document.querySelector('.CapsLock')
 const noneCapsLockToUpper = () => {
     keyLayout.forEach((el) => {
     if (!elements.functionalKeys.includes(el)) {
         const key = document.querySelector(`.${el}`)
-        if (!properties.capsLock) {
+        if (!capsLock.classList.contains('key__active')) {
         key.innerHTML = key.innerHTML.toUpperCase()
+        properties.capsLock = true
         }
     }
     })
@@ -208,8 +219,9 @@ const capsLockToUpper = () => {
     keyLayout.forEach((el) => {
     if (!elements.functionalKeys.includes(el)) {
         const key = document.querySelector(`.${el}`)
-        if (properties.capsLock) {
+        if (capsLock.classList.contains('key__active')) {
         key.innerHTML = key.innerHTML.toUpperCase()
+        properties.capsLock = true
         }
     }
     })
@@ -307,7 +319,7 @@ shiftHandler()
         event.target.classList.add('key__active')
         shiftHandler()
       } else if (event.target.classList.contains('ShiftRight') && !properties.shift) {
-        event.target.classList.add('key_active')
+        event.target.classList.add('key__active')
         shiftHandler()
       } else if (!event.target.classList.contains('ShiftRight')
         && !event.target.classList.contains('ShiftLeft')) {
@@ -318,12 +330,14 @@ shiftHandler()
     document.addEventListener('mouseup', () => {
       if (document.querySelector('.ShiftLeft').classList.contains('key__active') && !properties.shift) {
         document.querySelector('.ShiftLeft').classList.remove('key__active')
+        properties.shift = false
         shiftHandler()
-      }
-      if (document.querySelector('.ShiftRight').classList.contains('key__active') && !properties.shift) {
+      } else if (document.querySelector('.ShiftRight').classList.contains('key__active') && !properties.shift) {
         document.querySelector('.ShiftRight').classList.remove('key__active')
+        properties.shift = false
         shiftHandler()
       }
+
       keyLayout.forEach((element) => {
         if (element !== 'CapsLock' && element !== 'ShiftRight' && element !== 'ShiftLeft') {
           document.querySelector(`.${element}`).classList.remove('key__active')
@@ -357,10 +371,10 @@ shiftHandler()
         textarea.selectionEnd = end + 1
     }
     if (event.code === 'Tab') {
-        properties.value = properties.value.substring(0, start) + '\t' + properties.value.substring(end)
+        properties.value = properties.value.substring(0, start) + `     ` + properties.value.substring(end)
         textarea.value = properties.value
         textarea.focus()
-        textarea.selectionEnd = end + 1
+        textarea.selectionEnd = end + 5
     }
     if (keyLayout.includes(event.code) && !elements.functionalKeys.includes(event.code)) {
         properties.value = properties.value.substring(0, start)
@@ -371,23 +385,21 @@ shiftHandler()
     }
   }
   
-  
-const keyboardListener = () => {
+  const keyboardListener = () => {
     document.addEventListener('keydown', (event) => {
-
       textareaKeyboardListener(event)
 
       if (document.querySelector(`.${event.code}`)) {
         if (event.code === 'CapsLock' && !properties.capsLock) {
-          properties.capsLock = true
+            properties.capsLock = true
           document.querySelector(`.${event.code}`).classList.toggle('key__active')
           toggleCapsLock()
         } else if (event.code === 'ShiftLeft' && !properties.shift) {
-          properties.shift = true
+            properties.shift = true
           document.querySelector(`.${event.code}`).classList.add('key__active')
           shiftHandler()
         } else if (event.code === 'ShiftRight' && !properties.shift) {
-          properties.shift = true
+            properties.shift = true
           document.querySelector(`.${event.code}`).classList.add('key__active')
           shiftHandler()
         } else if (event.code !== 'ShiftLeft' && event.code !== 'ShiftRight') {
@@ -402,11 +414,12 @@ const keyboardListener = () => {
         if (event.code === 'CapsLock') {
           properties.capsLock = false
         } else if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
-          properties.shift = false
+            properties.shift = false
           document.querySelector('.ShiftRight').classList.remove('key__active')
           document.querySelector('.ShiftLeft').classList.remove('key__active')
+          shiftHandler()
         } else {
-          document.querySelector(`.${event.code}`).classList.remove('key__active')
+          document.querySelector(`.${event.code}`).classList.remove('key__active');
         }
       }
     })
