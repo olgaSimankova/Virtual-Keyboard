@@ -112,7 +112,7 @@ function initKeyboard() {
             <div class="textArea">
                 <textarea name="yourText" id="textArea" autofocus></textarea>
             </div>
-        </div>`
+        <h3>To switch layout use left Ctrl + Alt</h3>`
 
         // Add to DOM
         elements.main.append(elements.keysContainer)
@@ -261,7 +261,6 @@ shiftHandler()
   }
   
   function textareaMouseListener (event) {
-      console.log(event.target.classList[0])
     const textarea = document.getElementById('textArea')
     const start = textarea.selectionStart
     const end = textarea.selectionEnd
@@ -297,46 +296,7 @@ shiftHandler()
       textarea.selectionEnd = (start === end) ? (end + 1) : end
     }
   }
-  
-  const textareaKeyboardListener = (event) => {
-    const textarea = document.getElementById('textArea')
-    const start = textarea.selectionStart
-    const end = textarea.selectionEnd
-    const target = document.querySelector(`.${event.code}`)
-    event.preventDefault()
-    if (event.code === 'Backspace') {
-        properties.value = properties.value.substring(0, start > 0 ? start - 1 : start) + properties.value.substring(end)
-        textarea.value = properties.value
-        textarea.focus()
-        textarea.selectionEnd = start > 0 ? end - 1 : end
-    }
-    if (event.code === 'Delete') {
-        properties.value = properties.value.substring(0, start) + properties.value.substring(end + 1)
-      textarea.value = properties.value
-      textarea.focus()
-      textarea.selectionEnd = end
-    }
-    if (event.code === 'Enter') {
-        properties.value = properties.value.substring(0, start) + "\n" + properties.value.substring(end)
-        textarea.value = properties.value
-        textarea.focus()
-        textarea.selectionEnd = end + 1
-    }
-    if (event.code === 'Tab') {
-        properties.value = properties.value.substring(0, start) + '\t' + properties.value.substring(end)
-        textarea.value = properties.value
-        textarea.focus()
-        textarea.selectionEnd = end + 1
-    }
-    if (keyLayout.includes(event.code) && !elements.functionalKeys.includes(event.code)) {
-        properties.value = properties.value.substring(0, start)
-        + event.target.textContent + properties.value.substring(end)
-      textarea.value = properties.value
-      textarea.focus()
-      textarea.selectionEnd = (start === end) ? (end + 1) : end
-    }
-  }
-  
+
   const mouseListener = () => {
     document.querySelector('.keyboard__keys').addEventListener('mousedown', (event) => {
       textareaMouseListener(event)
@@ -371,6 +331,46 @@ shiftHandler()
       })
     })
   }
+  
+  const textareaKeyboardListener = (event) => {
+    const textarea = document.getElementById('textArea')
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const target = document.querySelector(`.${event.code}`)
+    event.preventDefault()
+    if (event.code === 'Backspace') {
+        properties.value = properties.value.substring(0, start > 0 ? start - 1 : start) + properties.value.substring(end)
+        textarea.value = properties.value
+        textarea.focus()
+        textarea.selectionEnd = start > 0 ? end - 1 : end
+    }
+    if (event.code === 'Delete') {
+        properties.value = properties.value.substring(0, start) + properties.value.substring(end + 1)
+      textarea.value = properties.value
+      textarea.focus()
+      textarea.selectionEnd = end
+    }
+    if (event.code === 'Enter') {
+        properties.value = properties.value.substring(0, start) + "\n" + properties.value.substring(end)
+        textarea.value = properties.value
+        textarea.focus()
+        textarea.selectionEnd = end + 1
+    }
+    if (event.code === 'Tab') {
+        properties.value = properties.value.substring(0, start) + '\t' + properties.value.substring(end)
+        textarea.value = properties.value
+        textarea.focus()
+        textarea.selectionEnd = end + 1
+    }
+    if (keyLayout.includes(event.code) && !elements.functionalKeys.includes(event.code)) {
+        properties.value = properties.value.substring(0, start)
+        + target.textContent + properties.value.substring(end)
+      textarea.value = properties.value
+      textarea.focus()
+      textarea.selectionEnd = (start === end) ? (end + 1) : end
+    }
+  }
+  
   
 const keyboardListener = () => {
     document.addEventListener('keydown', (event) => {
