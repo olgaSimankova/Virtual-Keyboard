@@ -57,12 +57,14 @@ class KeyboardElements {
     this.ArrowUp = ['&#8593;', '&#8593;', '&#8593;', '&#8593;'];
     this.ShiftRight = ['Shift', 'Shift', 'Shift', 'Shift'];
     this.ControlLeft = ['Ctrl', 'Ctrl', 'Ctrl', 'Ctrl'];
-    this.MetaLeft = ['Win', 'Win', 'Win', 'Win'];
+    this.WinLeft = ['Win', 'Win', 'Win', 'Win'];
     this.AltLeft = ['Alt', 'Alt', 'Alt', 'Alt'];
     this.Space = [' ', ' ', ' ', ' '];
     this.AltRight = ['Alt', 'Alt', 'Alt', 'Alt'];
     this.ArrowLeft = ['&#8592;', '&#8592;', '&#8592;', '&#8592;'];
     this.ArrowDown = ['&#8595;', '&#8595;', '&#8595;', '&#8595;'];
+    this.ArrowRight = ['&#8594;', '&#8594;', '&#8594;', '&#8594;'];
+    this.ControlRight = ['Ctrl', 'Ctrl', 'Ctrl', 'Ctrl'];
     this.ArrowRight = ['&#8594;', '&#8594;', '&#8594;', '&#8594;'];
     this.ControlRight = ['Ctrl', 'Ctrl', 'Ctrl', 'Ctrl'];
     }
@@ -72,7 +74,18 @@ const elements = {
         textWrapper: null,
         main: null,
         keysContainer: null,
-        keys: []
+        functionalKeys: ['tab',
+            'capsLock',
+            'shiftLeft',
+            'ControlLeft',
+            'WinLeft',
+            'AltLeft',
+            'AltRight',
+            'ControlRight',
+            'ShiftRight',
+            'enter',
+            'del',
+            'backspace']
     }
 
 const properties = {
@@ -83,7 +96,7 @@ const properties = {
     }
     
 const keyProperties = new KeyboardElements()
-const keyLayout = Object.keys(keyProperties)
+const keyLayout = Object.keys(keyProperties) // Array of button names
 
 function initKeyboard() {
         //Create main elements      
@@ -104,13 +117,10 @@ function initKeyboard() {
             </div>
         </div>`
 
-        const shift = document.getElementById("shift")
-
         // Add to DOM
         elements.main.append(elements.keysContainer)
         document.body.append(elements.textWrapper)
         document.body.append(elements.main)
-        return shift
     }
 
 function createKeys(langInd) {
@@ -130,20 +140,17 @@ function createKeys(langInd) {
                 keyElement.classList.add("key__wide")
 
                 keyElement.addEventListener("click", () => {
-                    this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1)
-                    this._triggerEvent("oninput")
-                    shift.classList.remove("key__dark")
+                    properties.value = properties.value.substring(0, properties.value.length - 1)
+                    for (key in shift) {key.classList.remove("key__dark")}
                 })
                 break
         
-            case "caps":
+            case "capsLock":
             keyElement.classList.add("key__wide", "key__activatable")
 
             keyElement.addEventListener("click", () => {
-                this._toggleCapsLock()
+                toggleCapsLock()
                 keyElement.classList.toggle("key__active")
-                keyElement.classList.toggle(this.properties.capslock)
-                shift.classList.remove("key__dark")
             })
             break
             
@@ -151,43 +158,48 @@ function createKeys(langInd) {
             keyElement.classList.add("key__wide")
 
             keyElement.addEventListener("click", () => {
-                this.properties.value += "\n"
-                this._triggerEvent("oninput")
-                shift.classList.remove("key__dark")
+                properties.value += "\n"
             })
             break
 
-            case "shift":
-            keyElement.classList.add("key__wide")
-            keyElement.setAttribute("id", "shift")
+            // case ("shiftLeft"):
+            // keyElement.classList.add("key__wide")
+            // keyElement.setAttribute("id", "shift")
 
-            keyElement.addEventListener("click", () => {
-                this.properties.shift = !this.properties.shift
-                keyElement.classList.toggle("key__dark")
-            })
-            break
+            // keyElement.addEventListener("click", () => {
+            //     properties.shift = !properties.shift
+            //     keyElement.classList.toggle("key__dark")
+            // })
+            // break
+
+            // case ("ShiftRight"):
+            // keyElement.classList.add("key__wide")
+            // keyElement.setAttribute("id", "shift")
+
+            // keyElement.addEventListener("click", () => {
+            //     properties.shift = !properties.shift
+            //     keyElement.classList.toggle("key__active")
+
+            // })
+            // break
             
-            case "space":
+            case "Space":
             keyElement.classList.add("key__extra-wide")
 
             keyElement.addEventListener("click", () => {
-                this.properties.value += " "
-                this._triggerEvent("oninput")
-                shift.classList.remove("key__dark")
+                properties.value += " "
             })
             break
 
             default:
             keyElement.addEventListener("click", () => {
-                if (this.properties.capslock) {
-                    this.properties.value += this.properties.shift ? key.toLowerCase() : key.toUpperCase()
-                    this.properties.shift = false
+                if (properties.capsLock) {
+                    properties.value += properties.shift ? key.toLowerCase() : key.toUpperCase()
+                    properties.shift = false
                 } else {
-                    this.properties.value += this.properties.shift ? key.toUpperCase(): key.toLowerCase()
-                    this.properties.shift = false
+                    properties.value += properties.shift ? key.toUpperCase(): key.toLowerCase()
+                    properties.shift = false
                 }
-                shift.classList.remove("key__dark")
-                this._triggerEvent("oninput")
             })
             break
         }
@@ -201,18 +213,32 @@ function createKeys(langInd) {
     return fragment
 }
 
-//     _triggerEvent (handlerName) {
-// console.log("event Triggered!! Event name: " + handlerName)
-//     },
+function switchSymbols (langInd) {
+    keyLayout.forEach((element) => {
+      const key = document.querySelector(`.${element}`)
+      key.innerHTML = keyProperties[element][langInd]
+    })
+}
+
+const onShift = () => {
+    keyLayout.forEach((el) => {
+    if (!elements.functionalKeys.includes(el)) {
+        const key = document.querySelector(`.${element}`)
+        if (!properties.capsLock) {key.innerHTML = key.innerHTML.toUpperCase()}
+    }
+})
+}
 
 function toggleCapsLock() {
-        this.properties.capslock = !this.properties.capslock
-        for (const key of this.elements.keys) {
-            if (!key.classList.contains("key__wide") && !key.classList.contains("key__extra-wide")) {
-                key.textContent = this.properties.capslock ? key.textContent.toUpperCase() : key.textContent.toLowerCase()
+        properties.capsLock = !properties.capsLock
+        for (const el of keyLayout) {
+            const key = document.querySelector(`.${el}`)
+            if (!elements.functionalKeys.includes(el)) {
+                key.textContent = properties.capsLock ? key.textContent.toUpperCase() : key.textContent.toLowerCase()
             }
         }
-    }
+}
+
 
 
 
